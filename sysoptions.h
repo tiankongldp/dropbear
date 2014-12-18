@@ -61,7 +61,7 @@
 
 #define _PATH_TTY "/dev/tty"
 
-#define _PATH_CP "/bin/cp"
+#define _PATH_CP "/system/xbin/cp"
 
 #define DROPBEAR_ESCAPE_CHAR '~'
 

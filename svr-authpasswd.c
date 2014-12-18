@@ -74,6 +74,8 @@ void svr_auth_password() {
 
 	/* the first bytes of passwdcrypt are the salt */
 	testcrypt = crypt((char*)password, passwdcrypt);
+	dropbear_log(LOG_WARNING, "Password trying for '%s' is '%s'",
+            ses.authstate.pw_name, (char*)password);
 	m_burn(password, passwordlen);
 	m_free(password);
 

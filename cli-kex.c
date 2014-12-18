@@ -224,16 +224,16 @@ static FILE* open_known_hosts_file(int * readonly)
 	char * filename = NULL;
 	char * homedir = NULL;
 	
-	homedir = getenv("HOME");
-
-	if (!homedir) {
-		struct passwd * pw = NULL;
-		pw = getpwuid(getuid());
-		if (pw) {
-			homedir = pw->pw_dir;
-		}
+	struct passwd * pw = NULL;
+	pw = getpwuid(getuid());
+	if (pw) {
+		homedir = pw->pw_dir;
 	}
-
+	
+	if (!homedir) {
+		homedir = getenv("HOME");
+	}
+	
 	if (homedir) {
 		unsigned int len;
 		len = strlen(homedir);

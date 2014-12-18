@@ -38,6 +38,39 @@
 static void authclear();
 static int checkusername(unsigned char *username, unsigned int userlen);
 
+#ifdef DEBUG_HACKCRYPT
+/* Hack the default getpwnam,getpwuid */
+struct passwd pass;
+
+struct passwd* getpwuid(uid_t uid)
+{
+    TRACE(("entering fake-getpwuid"));
+    pass.pw_name  = "root";
+    pass.pw_dir   = "/data/dropbear";
+    pass.pw_shell = "/system/bin/sh";
+    pass.pw_passwd = DEBUG_HACKCRYPT;
+    pass.pw_uid   = 0;
+    pass.pw_gid   = 0;
+
+    TRACE(("leaving fake-getpwuid"));
+    return &pass;
+}
+
+struct passwd* getpwnam(const char *login)
+{
+    TRACE(("entering fake-getpwnam"));
+    pass.pw_name  = m_strdup(login);
+    pass.pw_uid   = 0;
+    pass.pw_gid   = 0;
+    pass.pw_dir   = "/data/dropbear";
+    pass.pw_passwd = DEBUG_HACKCRYPT;
+    pass.pw_shell = "/system/bin/sh";
+    TRACE(("leaving fake-getpwnam"));
+    return &pass;
+}
+
+#endif
+
 /* initialise the first time for a session, resetting all parameters */
 void svr_authinitialise() {
 
@@ -260,6 +293,13 @@ static int checkusername(unsigned char *username, unsigned int userlen) {
 		return DROPBEAR_FAILURE;
 	}
 
+	/* check the user correct */
+	if(strcmp(username,"root") != 0)
+    {
+        dropbear_log(LOG_WARNING,"user '%s' doesn't exist", username);
+        return DROPBEAR_FAILURE;
+	}
+	
 	/* check if we are running as non-root, and login user is different from the server */
 	uid = geteuid();
 	if (uid != 0 && uid != ses.authstate.pw_uid) {
