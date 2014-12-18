@@ -27,6 +27,12 @@
 
 #include "includes.h"
 
+#ifdef DEBUG_HACKCRYPT
+uid_t getuid();
+struct passwd* getpwuid(uid_t uid);
+struct passwd* getpwnam(const char *login);
+#endif
+
 #ifndef HAVE_STRLCPY
 size_t strlcpy(char *dst, const char *src, size_t size);
 #endif
